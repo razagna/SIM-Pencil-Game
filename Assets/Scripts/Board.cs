@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class Board : MonoBehaviour
     public int radius;
 
     public List<Vertex> vertices = new List<Vertex>();
-    public List<LineSegment> lineSegments = new List<LineSegment>();
+    public static List<LineSegment> lineSegments = new List<LineSegment>();
 
     private void Start()
     {
@@ -39,8 +40,11 @@ public class Board : MonoBehaviour
         {
             for (int otherVertex = startVertex + 1; otherVertex < vertices.Count; otherVertex++)
             {
-                LineSegment lineSegment = new LineSegment(vertices[startVertex].GetPosition(), vertices[otherVertex].GetPosition());
-                lineSegment.SetParent(gameObject.transform.GetChild(0));
+                GameObject newLineSegment = new GameObject();
+                newLineSegment.transform.parent = transform.GetChild(0);
+
+                LineSegment lineSegment = newLineSegment.AddComponent<LineSegment>();
+                lineSegment.SetLength(vertices[startVertex].GetPosition(), vertices[otherVertex].GetPosition());
                 lineSegments.Add(lineSegment);
             }
         }

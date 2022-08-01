@@ -19,6 +19,7 @@ public class Vertex
 
         SpriteRenderer spriteRenderer = vertex.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = Resources.Load<Sprite>("Sprites/Vertex");
+        spriteRenderer.sortingOrder = 2;
     }
 
     public void SetColor(Color color)
