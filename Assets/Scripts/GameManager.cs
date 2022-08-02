@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -12,7 +13,7 @@ public class GameManager : MonoBehaviour
         PlayerTurn,
         EnemyTurn,
         Victory,
-        Lose,
+        Loss,
         Reset
     }
 
@@ -28,7 +29,6 @@ public class GameManager : MonoBehaviour
 
     public static event Action<GameState> OnGameStateChanged;
 
-    //public List<Player> players = new List<Player>();
     public Player user = new Player();
     public Player enemy = new Player();
 
@@ -48,9 +48,7 @@ public class GameManager : MonoBehaviour
         user.playerType = Player.PlayerType.User;
         user.SetColor(Color.green);
         enemy.playerType = Player.PlayerType.Enemy;
-        enemy.SetColor(Color.magenta);
-        //players.Add(user);
-        //players.Add(enemy);
+        enemy.SetColor(Color.red);
     }
 
     public void UpdateGameState(GameState newState)
@@ -68,7 +66,7 @@ public class GameManager : MonoBehaviour
             case GameState.Victory:
                 HandleVictory();
                 break;
-            case GameState.Lose:
+            case GameState.Loss:
                 HandleLoss();
                 break;
             case GameState.Reset:
@@ -80,7 +78,6 @@ public class GameManager : MonoBehaviour
 
         // notify all scripts that care about the state change
         OnGameStateChanged?.Invoke(newState);
-
     }
 
     void HandlePlayerTurn()
@@ -96,22 +93,26 @@ public class GameManager : MonoBehaviour
             if (!lineSegments[current].selected)
             {
                 Debug.Log("Launching enemy attack");
-                await Task.Delay(1000);
-                lineSegments[current].Select(enemy);
+                await Task.Delay(300);
+                lineSegments[current].AssignTo(enemy);
                 break;
             }
         }
-        UpdateGameState(GameState.PlayerTurn);
+
+        if (enemy.HasCreatedTriangle())
+            UpdateGameState(GameState.Victory);
+        else
+            UpdateGameState(GameState.PlayerTurn);
     }
 
     void HandleVictory()
     {
-        throw new NotImplementedException();
+        Debug.Log("You Have Won! :)");
     }
 
     void HandleLoss()
     {
-        throw new NotImplementedException();
+        Debug.Log("You Have Lost! :(");
     }
 
     void HandleReset()
