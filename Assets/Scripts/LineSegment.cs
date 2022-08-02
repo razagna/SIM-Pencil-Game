@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,14 +11,6 @@ public class LineSegment : MonoBehaviour
     void Awake() => GameManager.OnGameStateChanged += OnGameStateChanged;
     void OnDestroy() => GameManager.OnGameStateChanged -= OnGameStateChanged;
 
-    void OnGameStateChanged(GameManager.GameState state)
-    {
-        if (state != GameManager.GameState.PlayerTurn)
-            gameObject.GetComponent<EdgeCollider2D>().enabled = false;
-        else if(state == GameManager.GameState.PlayerTurn)
-            gameObject.GetComponent<EdgeCollider2D>().enabled = true;
-    }
-
     public void SetLength(Vector3 startPoint, Vector3 endPoint)
     {
         this.startPoint = startPoint;
@@ -28,7 +20,8 @@ public class LineSegment : MonoBehaviour
     public void Draw()
     {
         lineRenderer = gameObject.AddComponent<LineRenderer>();
-        lineRenderer.material = Resources.Load<Material>("Materials/LineSegment");
+        lineRenderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
+        ChangeColor(Color.gray);
 
         lineRenderer.startWidth = 0.5f;
         lineRenderer.endWidth = 0.5f;
@@ -48,36 +41,47 @@ public class LineSegment : MonoBehaviour
     void OnMouseOver()
     {
         if (!selected)
-        {
-            lineRenderer.startColor = Color.cyan;
-            lineRenderer.endColor = Color.cyan;
-        }
+            ChangeColor(GameManager.Instance.user.GetColor().linear * 0.7f);
     }
 
     void OnMouseExit()
     {
         if(!selected)
-        {
-            lineRenderer.startColor = Color.white;
-            lineRenderer.endColor = Color.white;
-        }
+            ChangeColor(Color.gray);
     }
 
     void OnMouseDown()
     {
         if (!selected)
         {
-            Select(GameManager.Instance.user);
-            GameManager.Instance.UpdateGameState(GameManager.GameState.EnemyTurn);
+            AssignTo(GameManager.Instance.user);
+
+            if (GameManager.Instance.user.HasCreatedTriangle())
+                GameManager.Instance.UpdateGameState(GameManager.GameState.Loss);
+            else
+                GameManager.Instance.UpdateGameState(GameManager.GameState.EnemyTurn);
         }
     }
 
-    public void Select(Player player)
+    public void AssignTo(Player player)
     {
         selected = true;
-        lineRenderer.startColor = player.GetColor();
-        lineRenderer.endColor = player.GetColor();
+        ChangeColor(player.GetColor());
         player.AddLineSegment(this);
+    }
+
+    public void ChangeColor(Color color)
+    {
+        lineRenderer.startColor = color;
+        lineRenderer.endColor = color;
+    }
+
+    void OnGameStateChanged(GameManager.GameState state)
+    {
+        if (state != GameManager.GameState.PlayerTurn)
+            gameObject.GetComponent<EdgeCollider2D>().enabled = false;
+        else if (state == GameManager.GameState.PlayerTurn)
+            gameObject.GetComponent<EdgeCollider2D>().enabled = true;
     }
 
     public Vector3 GetStartPosition()
@@ -88,6 +92,48 @@ public class LineSegment : MonoBehaviour
     public Vector3 GetEndPosition()
     {
         return endPoint;
+    }
+
+
+    public Vector3? GetJointWith(LineSegment otherLineSegment)
+    {
+        Vector3 otherStart = otherLineSegment.GetStartPosition();
+        Vector3 otherEnd = otherLineSegment.GetEndPosition();
+
+        if (startPoint == otherStart || startPoint == otherEnd)
+            return startPoint;
+        else if (endPoint == otherStart || endPoint == otherEnd)
+            return endPoint;
+        else
+            return null;
+    }
+
+    public void Glow(Color originalColor, float emissiveIntensity)
+    {
+        Material glow = Resources.Load<Material>("Materials/Glow");
+
+        glow.SetColor("_BaseColor", originalColor);
+
+        Color emissiveColor = originalColor * emissiveIntensity;
+        glow.SetColor("_EmissionColor", emissiveColor);
+
+        lineRenderer.material = glow;
+    }
+
+    public void PlayAnimation(Color originalColor)
+    {
+        StartCoroutine(Flicker(originalColor));
+    }
+
+    IEnumerator Flicker(Color originalColor)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            Glow(originalColor, 0.1f);
+            yield return new WaitForSeconds(0.2f);
+            Glow(originalColor, 4.0f);
+            yield return new WaitForSeconds(0.2f);
+        }
     }
 
 }
