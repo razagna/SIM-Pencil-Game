@@ -1,8 +1,10 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameMenu : MonoBehaviour
 {
-    [SerializeField] GameObject winScreen, loseScreen, options;
+    [SerializeField] GameObject clearButton, gameOverMenu, youWin, youLose;
 
     void Awake()
     {
@@ -16,10 +18,26 @@ public class GameMenu : MonoBehaviour
 
     void OnGameStateChanged(GameManager.GameState state)
     {
-        //Debug.Log("new state is " + state);
-        //clearButton.SetActive(state == GameManager.GameState.PlayerTurn || state == GameManager.GameState.EnemyTurn);
-        winScreen.SetActive(state == GameManager.GameState.Victory);
-        loseScreen.SetActive(state == GameManager.GameState.Loss);
-        options.SetActive(state == GameManager.GameState.Loss || state == GameManager.GameState.Victory);
+        if (state == GameManager.GameState.GameOver)
+            StartCoroutine(DisplayGameOverMenu(1.7f));
+    }
+
+    IEnumerator DisplayGameOverMenu(float time)
+    {
+        yield return new WaitForSeconds(time);
+        clearButton.SetActive(false);
+        gameOverMenu.SetActive(true);
+        youWin.SetActive(!GameManager.Instance.user.HasLost());
+        youLose.SetActive(GameManager.Instance.user.HasLost());
+    }
+
+    public void Restart()
+    {
+        Debug.Log("restarting game");
+    }
+
+    public void Back()
+    {
+        SceneManager.LoadScene(0);
     }
 }

@@ -12,8 +12,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerTurn,
         EnemyTurn,
-        Victory,
-        Loss,
+        GameOver,
         Reset
     }
 
@@ -46,9 +45,9 @@ public class GameManager : MonoBehaviour
     private void InitPlayers()
     {
         user.playerType = Player.PlayerType.User;
-        user.SetColor(Color.green);
+        user.color = Color.green;
         enemy.playerType = Player.PlayerType.Enemy;
-        enemy.SetColor(Color.red);
+        enemy.color = Color.red;
     }
 
     public void UpdateGameState(GameState newState)
@@ -63,11 +62,8 @@ public class GameManager : MonoBehaviour
             case GameState.EnemyTurn:
                 HandleEnemyTurn();
                 break;
-            case GameState.Victory:
-                HandleVictory();
-                break;
-            case GameState.Loss:
-                HandleLoss();
+            case GameState.GameOver:
+                HandleGameOver();
                 break;
             case GameState.Reset:
                 HandleReset();
@@ -82,7 +78,7 @@ public class GameManager : MonoBehaviour
 
     void HandlePlayerTurn()
     {
-        Debug.Log("It's your turn");
+        Debug.Log("It's your turn!");
     }
 
     async void HandleEnemyTurn()
@@ -92,7 +88,7 @@ public class GameManager : MonoBehaviour
         {
             if (!lineSegments[current].selected)
             {
-                Debug.Log("Launching enemy attack");
+                Debug.Log("AI is picking");
                 await Task.Delay(300);
                 lineSegments[current].AssignTo(enemy);
                 break;
@@ -100,24 +96,23 @@ public class GameManager : MonoBehaviour
         }
 
         if (enemy.HasCreatedTriangle())
-            UpdateGameState(GameState.Victory);
+            UpdateGameState(GameState.GameOver);
         else
             UpdateGameState(GameState.PlayerTurn);
     }
 
-    void HandleVictory()
+    void HandleGameOver()
     {
-        Debug.Log("You Have Won! :)");
-    }
-
-    void HandleLoss()
-    {
-        Debug.Log("You Have Lost! :(");
+        string message = user.HasLost() ? "You Have Lost! :(" : "You Have Won! :)";
+        Debug.Log(message);
     }
 
     void HandleReset()
     {
         Debug.Log("Game is being Reset");
+        user.Reset();
+        enemy.Reset();
+        UpdateGameState(GameState.PlayerTurn);
     }
 
 }

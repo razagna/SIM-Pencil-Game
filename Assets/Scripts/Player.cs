@@ -13,17 +13,9 @@ public class Player
 
     [SerializeField] List<LineSegment> ownedLines = new List<LineSegment>();
 
-    Color color;
+    public Color color;
 
-    public void SetColor(Color color)
-    {
-        this.color = color;
-    }
-
-    public Color GetColor()
-    {
-        return color;
-    }
+    bool hasLost = false;
 
     public void AddLineSegment(LineSegment lineSegment)
     {
@@ -47,9 +39,10 @@ public class Player
                         Vector3? thirdFirstJoint = third.GetJointWith(first);
                         if (third.GetJointWith(second).HasValue && thirdFirstJoint.HasValue && thirdFirstJoint != secondFirstJoint)
                         {
-                            first.PlayAnimation(color);
-                            second.PlayAnimation(color);
-                            third.PlayAnimation(color);
+                            hasLost = true;
+                            first.Flicker(color);
+                            second.Flicker(color);
+                            third.Flicker(color);
                             return true;
                         }
                     }
@@ -58,6 +51,18 @@ public class Player
         }
 
         return false;
+    }
+
+    public bool HasLost()
+    {
+        return hasLost;
+    }
+
+    public void Reset()
+    {
+        hasLost = false;
+        ownedLines.Clear();
+        Debug.Log(ownedLines.ToString());
     }
 
 }

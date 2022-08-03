@@ -44,7 +44,8 @@ public class Board : MonoBehaviour
                 newLineSegment.transform.parent = transform.GetChild(0);
 
                 LineSegment lineSegment = newLineSegment.AddComponent<LineSegment>();
-                lineSegment.SetLength(vertices[startVertex].GetPosition(), vertices[otherVertex].GetPosition());
+                lineSegment.startPoint = vertices[startVertex].GetPosition();
+                lineSegment.endPoint = vertices[otherVertex].GetPosition();
                 lineSegments.Add(lineSegment);
             }
         }
@@ -57,6 +58,14 @@ public class Board : MonoBehaviour
 
         foreach (LineSegment lineSegment in lineSegments)
             lineSegment.Draw();
+    }
+
+    public void ResetBoard()
+    {
+        foreach (LineSegment lineSegment in lineSegments)
+            lineSegment.Reset();
+
+        GameManager.Instance.UpdateGameState(GameManager.GameState.Reset);
     }
 
 }
