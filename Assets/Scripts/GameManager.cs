@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -31,10 +30,7 @@ public class GameManager : MonoBehaviour
     public Player user = new Player();
     public Player enemy = new Player();
 
-    private void Awake()
-    {
-        Instance = this;
-    }
+    void Awake() => Instance = this;
 
     private void Start()
     {
@@ -52,6 +48,8 @@ public class GameManager : MonoBehaviour
 
     public void UpdateGameState(GameState newState)
     {
+        if (newState == state) return;
+
         state = newState;
 
         switch (newState)
@@ -109,9 +107,9 @@ public class GameManager : MonoBehaviour
 
     void HandleReset()
     {
-        Debug.Log("Game is being Reset");
-        user.Reset();
-        enemy.Reset();
+        Debug.Log("Game is being reset");
+        user.ResetValues();
+        enemy.ResetValues();
         UpdateGameState(GameState.PlayerTurn);
     }
 

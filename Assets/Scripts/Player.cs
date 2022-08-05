@@ -58,11 +58,11 @@ public class Player
         return hasLost;
     }
 
-    public void Reset()
+    public void ResetValues()
     {
         hasLost = false;
         ownedLines.Clear();
-        Debug.Log(ownedLines.ToString());
+        ownedLines.TrimExcess();
     }
 
 }

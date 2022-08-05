@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,14 +9,23 @@ public class Board : MonoBehaviour
     public List<Vertex> vertices = new List<Vertex>();
     public static List<LineSegment> lineSegments = new List<LineSegment>();
 
-    private void Start()
+    public enum Shape
+    {
+        Pentagon = 5,
+        Hexagon = 6,
+    }
+
+    public Shape shape;
+
+    void Awake()
     {
         GenerateVerticies(radius, sides);
         GenerateLineSegments();
         DrawBoard();
+        //Debug.Log("shape is: " + ((int)shape));
     }
 
-    private void GenerateVerticies(int radius, int sides)
+    void GenerateVerticies(int radius, int sides)
     {
         float angle = 2 * Mathf.PI / sides;
 
@@ -63,7 +71,7 @@ public class Board : MonoBehaviour
     public void ResetBoard()
     {
         foreach (LineSegment lineSegment in lineSegments)
-            lineSegment.Reset();
+            lineSegment.ResetValues();
 
         GameManager.Instance.UpdateGameState(GameManager.GameState.Reset);
     }

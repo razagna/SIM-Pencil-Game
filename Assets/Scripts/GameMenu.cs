@@ -31,13 +31,9 @@ public class GameMenu : MonoBehaviour
         youLose.SetActive(GameManager.Instance.user.HasLost());
     }
 
-    public void Restart()
-    {
-        Debug.Log("restarting game");
-    }
-
     public void Back()
     {
         SceneManager.LoadScene(0);
     }
+
 }
