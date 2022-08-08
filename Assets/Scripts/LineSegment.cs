@@ -20,13 +20,24 @@ public class LineSegment : MonoBehaviour
         gameObject.name = "Line";
 
         lineRenderer.positionCount = 2;
+        lineRenderer.useWorldSpace = false;
         lineRenderer.SetPositions(new Vector3[] { startPoint, endPoint });
+        
 
         lineRenderer.sortingOrder = 1;
 
         EdgeCollider2D edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
         edgeCollider.SetPoints(new List<Vector2> { new Vector2(startPoint.x, startPoint.y), new Vector2(endPoint.x, endPoint.y) });
-        edgeCollider.edgeRadius = 0.5f;
+        edgeCollider.edgeRadius = 0.1f; //0.5f
+    }
+
+    public void DrawPreview()
+    {
+        lineRenderer.startWidth = 0.1f;
+        lineRenderer.endWidth = 0.1f;
+        gameObject.layer = 5;
+        gameObject.transform.localPosition = Vector3.zero;
+        gameObject.transform.localScale = Vector3.one;
     }
 
     void OnMouseOver() 

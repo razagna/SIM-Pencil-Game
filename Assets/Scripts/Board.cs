@@ -3,26 +3,33 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-    public int sides;
+    //public int shape;
     public int radius;
 
     public List<Vertex> vertices = new List<Vertex>();
     public static List<LineSegment> lineSegments = new List<LineSegment>();
 
-    public enum Shape
-    {
-        Pentagon = 5,
-        Hexagon = 6,
-    }
+    //void Awake()
+    //{
+    //    GenerateVerticies(radius, PlayerPrefs.GetInt("shape"));
+    //    GenerateLineSegments();
+    //    DrawBoard();
+    //}
 
-    public Shape shape;
-
-    void Awake()
+    public void DrawPreview()
     {
-        GenerateVerticies(radius, sides);
+        Debug.Log("drawing preview");
+        GenerateVerticies(radius, PlayerPrefs.GetInt("shape"));
         GenerateLineSegments();
-        DrawBoard();
-        //Debug.Log("shape is: " + ((int)shape));
+        foreach (Vertex vertex in vertices)
+            vertex.Draw();
+
+        foreach (LineSegment lineSegment in lineSegments)
+        {
+            lineSegment.Draw();
+            lineSegment.DrawPreview();
+        }
+            
     }
 
     void GenerateVerticies(int radius, int sides)

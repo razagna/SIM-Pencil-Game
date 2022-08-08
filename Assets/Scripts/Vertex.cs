@@ -13,9 +13,10 @@ public class Vertex
 
     public void Draw()
     {
-        vertex.transform.localScale = new Vector3(0.004f, 0.004f, 0.004f);
-        vertex.transform.position = new Vector3(xPosition, yPosition, 0);
+        vertex.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f); //0.004f
+        vertex.transform.localPosition = new Vector3(xPosition, yPosition, 0); //position
         vertex.name = "Vertex";
+        vertex.layer = 5;
 
         SpriteRenderer spriteRenderer = vertex.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = Resources.Load<Sprite>("Sprites/Vertex");
