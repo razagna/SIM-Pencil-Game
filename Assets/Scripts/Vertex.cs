@@ -9,18 +9,23 @@ public class Vertex
     {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
+        vertex.name = "Vertex";
     }
 
-    public void Draw()
+    public void Draw(float scale, bool preview)
     {
-        vertex.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f); //0.004f
-        vertex.transform.localPosition = new Vector3(xPosition, yPosition, 0); //position
-        vertex.name = "Vertex";
-        vertex.layer = 5;
+        vertex.transform.localScale = new Vector3(scale, scale, scale);
+        vertex.transform.position = new Vector3(xPosition, yPosition, 0);
 
         SpriteRenderer spriteRenderer = vertex.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = Resources.Load<Sprite>("Sprites/Vertex");
         spriteRenderer.sortingOrder = 2;
+
+        if (preview)
+        {
+            vertex.transform.InverseTransformPoint(vertex.transform.position);
+            vertex.layer = 5;
+        }
     }
 
     public void SetColor(Color color)

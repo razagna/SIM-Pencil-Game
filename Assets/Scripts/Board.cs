@@ -3,40 +3,32 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-    //public int shape;
-    public int radius;
+    int shape;
+    float radius;
 
     public List<Vertex> vertices = new List<Vertex>();
     public static List<LineSegment> lineSegments = new List<LineSegment>();
 
     //void Awake()
     //{
-    //    GenerateVerticies(radius, PlayerPrefs.GetInt("shape"));
-    //    GenerateLineSegments();
-    //    DrawBoard();
+    //    Init(10, 6);
+    //    Draw(0.004f, 0.5f);
     //}
 
-    public void DrawPreview()
+    public void Init(float radius, int shape)
     {
-        Debug.Log("drawing preview");
-        GenerateVerticies(radius, PlayerPrefs.GetInt("shape"));
-        GenerateLineSegments();
-        foreach (Vertex vertex in vertices)
-            vertex.Draw();
+        this.radius = radius;
+        this.shape = shape;
 
-        foreach (LineSegment lineSegment in lineSegments)
-        {
-            lineSegment.Draw();
-            lineSegment.DrawPreview();
-        }
-            
+        GenerateVerticies();
+        GenerateLineSegments();
     }
 
-    void GenerateVerticies(int radius, int sides)
+    void GenerateVerticies()
     {
-        float angle = 2 * Mathf.PI / sides;
+        float angle = 2 * Mathf.PI / shape;
 
-        for (int currentVertex = 0; currentVertex < sides; currentVertex++)
+        for (int currentVertex = 0; currentVertex < shape; currentVertex++)
         {
             float currentAngle = currentVertex * angle;
 
@@ -66,13 +58,13 @@ public class Board : MonoBehaviour
         }
     }
 
-    void DrawBoard()
+    public void Draw(float vertexScale, float lineWidth, bool preview = false)
     {
         foreach (Vertex vertex in vertices)
-            vertex.Draw();
+            vertex.Draw(vertexScale, preview);
 
         foreach (LineSegment lineSegment in lineSegments)
-            lineSegment.Draw();
+            lineSegment.Draw(lineWidth, preview);
     }
 
     public void ResetBoard()
@@ -81,6 +73,20 @@ public class Board : MonoBehaviour
             lineSegment.ResetValues();
 
         GameManager.Instance.UpdateGameState(GameManager.GameState.Reset);
+    }
+
+    public void DestroyBoard()
+    {
+        foreach (Transform line in transform.GetChild(0))
+            Destroy(line.gameObject);
+
+        foreach (Transform vertex in transform.GetChild(1))
+            Destroy(vertex.gameObject);
+
+        lineSegments.Clear();
+        lineSegments.TrimExcess();
+        vertices.Clear();
+        vertices.TrimExcess();
     }
 
 }

@@ -20,9 +20,11 @@ public class MainMenu : MonoBehaviour
 
     public void OnDropDownValueChanged(TMP_Dropdown dropDown)
     {
-        PlayerPrefs.SetInt("shape", dropDown.value + 5);
-        Debug.Log(PlayerPrefs.GetInt("shape"));
-        preview.DrawPreview();
+        PlayerPrefs.SetInt("shape", dropDown.value + 4);
+
+        if (preview.transform.GetChild(0).childCount > 0) preview.DestroyBoard();
+        preview.Init(1.3f, PlayerPrefs.GetInt("shape"));
+        preview.Draw(0.004f, 0.1f, true);
     }
 
     public void SetPlayer(Image player)

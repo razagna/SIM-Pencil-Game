@@ -8,14 +8,14 @@ public class LineSegment : MonoBehaviour
     LineRenderer lineRenderer;
     public bool selected = false;
 
-    public void Draw()
+    public void Draw(float lineWidth, bool preview)
     {
         lineRenderer = gameObject.AddComponent<LineRenderer>();
         lineRenderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
         ChangeColor(Color.gray);
 
-        lineRenderer.startWidth = 0.5f;
-        lineRenderer.endWidth = 0.5f;
+        lineRenderer.startWidth = lineWidth;
+        lineRenderer.endWidth = lineWidth;
 
         gameObject.name = "Line";
 
@@ -28,16 +28,15 @@ public class LineSegment : MonoBehaviour
 
         EdgeCollider2D edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
         edgeCollider.SetPoints(new List<Vector2> { new Vector2(startPoint.x, startPoint.y), new Vector2(endPoint.x, endPoint.y) });
-        edgeCollider.edgeRadius = 0.1f; //0.5f
-    }
+        edgeCollider.edgeRadius = lineWidth;
 
-    public void DrawPreview()
-    {
-        lineRenderer.startWidth = 0.1f;
-        lineRenderer.endWidth = 0.1f;
-        gameObject.layer = 5;
-        gameObject.transform.localPosition = Vector3.zero;
-        gameObject.transform.localScale = Vector3.one;
+        if (preview)
+        {
+            gameObject.transform.localPosition = Vector3.zero;
+            gameObject.transform.localScale = Vector3.one;
+            gameObject.layer = 5;
+            enabled = false;
+        }
     }
 
     void OnMouseOver() 
