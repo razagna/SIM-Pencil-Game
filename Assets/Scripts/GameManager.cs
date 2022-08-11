@@ -32,18 +32,30 @@ public class GameManager : MonoBehaviour
 
     void Awake() => Instance = this;
 
-    private void Start()
+    void Start()
     {
-        InitPlayers();
+        //InitPlayers();
         UpdateGameState(GameState.PlayerTurn);
     }
 
-    private void InitPlayers()
+    public void InitPlayers()
     {
         user.playerType = Player.PlayerType.User;
-        user.color = Color.green;
+        user.color = GetPlayerColor("Color_A");
+
         enemy.playerType = Player.PlayerType.Enemy;
-        enemy.color = Color.red;
+        enemy.color = GetPlayerColor("Color_B");
+    }
+
+    Color GetPlayerColor(string player)
+    {
+        var strings = PlayerPrefs.GetString(player).Split(", "[0]);
+
+        Color color = Color.black;
+        for (var i = 0; i < 3; i++)
+            color[i] = float.Parse(strings[i]);
+
+        return color;
     }
 
     public void UpdateGameState(GameState newState)
