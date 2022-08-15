@@ -3,18 +3,8 @@ using UnityEngine;
 
 public class Player
 {
-    public enum PlayerType
-    {
-        User,
-        Enemy
-    }
-
-    public PlayerType playerType;
-
     [SerializeField] List<LineSegment> ownedLines = new List<LineSegment>();
-
     public Color color;
-
     bool hasLost = false;
 
     public void AddLineSegment(LineSegment lineSegment)
@@ -63,6 +53,11 @@ public class Player
         hasLost = false;
         ownedLines.Clear();
         ownedLines.TrimExcess();
+    }
+
+    public virtual void SelectMove()
+    {
+        Debug.Log("Pick your move!");
     }
 
 }
