@@ -6,7 +6,12 @@ public class LineSegment : MonoBehaviour
 {
     public Vector3 startPoint, endPoint;
     LineRenderer lineRenderer;
+    EdgeCollider2D edgeCollider;
     public bool selected = false;
+
+    void Awake() => GameManager.OnGameStateChanged += OnGameStateChanged;
+    void OnGameStateChanged(GameManager.GameState state) => edgeCollider.enabled = !GameManager.Instance.GetActivePlayer().GetType().Equals(typeof(AI));
+    void OnDestroy() => GameManager.OnGameStateChanged -= OnGameStateChanged;
 
     public void Draw(float lineWidth, bool preview)
     {
@@ -26,7 +31,7 @@ public class LineSegment : MonoBehaviour
 
         lineRenderer.sortingOrder = 1;
 
-        EdgeCollider2D edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
+        edgeCollider = gameObject.AddComponent<EdgeCollider2D>();
         edgeCollider.SetPoints(new List<Vector2> { new Vector2(startPoint.x, startPoint.y), new Vector2(endPoint.x, endPoint.y) });
         edgeCollider.edgeRadius = lineWidth;
 
@@ -39,34 +44,24 @@ public class LineSegment : MonoBehaviour
         }
     }
 
-    void OnMouseOver() 
+    void OnMouseOver()
     {
-        if (selected || GameManager.Instance.state != GameManager.GameState.PlayerTurn) 
-            return;
-
-        Color original = GameManager.Instance.user.color;
+        if (selected) return;
+        Color original = GameManager.Instance.GetActivePlayer().color;
         Color hoverColor = new Color(original.r * 0.7f, original.g * 0.7f, original.b * 0.7f, 1);
         ChangeColor(hoverColor);
     }
 
     void OnMouseDown()
     {
-        if (selected || GameManager.Instance.state != GameManager.GameState.PlayerTurn) 
-            return;
-
-        AssignTo(GameManager.Instance.user);
-
-        if (GameManager.Instance.user.HasCreatedTriangle())
-            GameManager.Instance.UpdateGameState(GameManager.GameState.GameOver);
-        else
-            GameManager.Instance.UpdateGameState(GameManager.GameState.EnemyTurn);
+        if (selected) return;
+        AssignTo(GameManager.Instance.GetActivePlayer());
+        GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
     }
 
     void OnMouseExit()
     {
-        if (selected || GameManager.Instance.state != GameManager.GameState.PlayerTurn) 
-            return;
-
+        if (selected) return;
         ChangeColor(Color.gray);
     }
 
@@ -75,6 +70,13 @@ public class LineSegment : MonoBehaviour
         selected = true;
         ChangeColor(player.color);
         player.AddLineSegment(this);
+        edgeCollider.enabled = false;
+    }
+
+    public void ChangeColor(Color color)
+    {
+        lineRenderer.startColor = color;
+        lineRenderer.endColor = color;
     }
 
     public Vector3? GetJointWith(LineSegment otherLineSegment)
@@ -88,12 +90,6 @@ public class LineSegment : MonoBehaviour
             return endPoint;
         else
             return null;
-    }
-
-    public void ChangeColor(Color color)
-    {
-        lineRenderer.startColor = color;
-        lineRenderer.endColor = color;
     }
 
     public async void Flicker(Color originalColor)

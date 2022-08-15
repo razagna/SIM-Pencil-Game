@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -9,8 +7,9 @@ public class GameManager : MonoBehaviour
 
     public enum GameState
     {
-        PlayerTurn,
-        EnemyTurn,
+        Play,
+        SwitchPlayer,
+        EvaluateBoard,
         GameOver,
         Reset
     }
@@ -27,24 +26,28 @@ public class GameManager : MonoBehaviour
 
     public static event Action<GameState> OnGameStateChanged;
 
-    public Player user = new Player();
-    public Player enemy = new Player();
+    Player user = new Player();
+    AI enemy = new AI();
+    Player[] players;
+
+    int activePlayer = 1;
+    int losingPlayer = 0;
 
     void Awake() => Instance = this;
 
     void Start()
     {
-        //InitPlayers();
-        UpdateGameState(GameState.PlayerTurn);
+        PlayerPrefs.SetInt("PlayerType", 0);
+        enemyType = PlayerPrefs.GetInt("EnemyType") == 0 ? EnemyType.AI : EnemyType.Human;
+        InitPlayers();
+        UpdateGameState(GameState.SwitchPlayer);  
     }
 
     public void InitPlayers()
     {
-        user.playerType = Player.PlayerType.User;
         user.color = GetPlayerColor("Color_A");
-
-        enemy.playerType = Player.PlayerType.Enemy;
         enemy.color = GetPlayerColor("Color_B");
+        players = new Player[2] { user, enemy };
     }
 
     Color GetPlayerColor(string player)
@@ -66,11 +69,14 @@ public class GameManager : MonoBehaviour
 
         switch (newState)
         {
-            case GameState.PlayerTurn:
-                HandlePlayerTurn();
+            case GameState.Play:
+                HandlePlay();
                 break;
-            case GameState.EnemyTurn:
-                HandleEnemyTurn();
+            case GameState.SwitchPlayer:
+                HandleSwitchPlayer();
+                break;
+            case GameState.EvaluateBoard:
+                HandleEvaluateBoard();
                 break;
             case GameState.GameOver:
                 HandleGameOver();
@@ -82,33 +88,29 @@ public class GameManager : MonoBehaviour
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
         }
 
-        // notify all scripts that care about the state change
         OnGameStateChanged?.Invoke(newState);
     }
 
-    void HandlePlayerTurn()
+    void HandlePlay()
     {
-        Debug.Log("It's your turn!");
+        players[activePlayer].SelectMove();
     }
 
-    async void HandleEnemyTurn()
+    void HandleSwitchPlayer()
     {
-        List<LineSegment> lineSegments = Board.lineSegments;
-        for (int current = 0; current < lineSegments.Count; current++)
-        {
-            if (!lineSegments[current].selected)
-            {
-                Debug.Log("AI is picking");
-                await Task.Delay(300);
-                lineSegments[current].AssignTo(enemy);
-                break;
-            }
-        }
+        activePlayer = 1 - activePlayer;
+        UpdateGameState(GameState.Play);
+    }
 
-        if (enemy.HasCreatedTriangle())
-            UpdateGameState(GameState.GameOver);
+    void HandleEvaluateBoard()
+    {
+        if (!players[activePlayer].HasCreatedTriangle())
+            UpdateGameState(GameState.SwitchPlayer);
         else
-            UpdateGameState(GameState.PlayerTurn);
+        {
+            losingPlayer = activePlayer;
+            UpdateGameState(GameState.GameOver);
+        }
     }
 
     void HandleGameOver()
@@ -120,9 +122,18 @@ public class GameManager : MonoBehaviour
     void HandleReset()
     {
         Debug.Log("Game is being reset");
-        user.ResetValues();
-        enemy.ResetValues();
-        UpdateGameState(GameState.PlayerTurn);
+        foreach (Player player in players) player.ResetValues();
+        UpdateGameState(GameState.SwitchPlayer);
+    }
+
+    public Player GetActivePlayer()
+    {
+        return players[activePlayer];
+    }
+
+    public Player GetLoser()
+    {
+        return players[losingPlayer];
     }
 
 }

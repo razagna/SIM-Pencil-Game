@@ -4,17 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class GameMenu : MonoBehaviour
 {
-    [SerializeField] GameObject clearButton, gameOverMenu, youWin, youLose;
+    [SerializeField] GameObject clearButton, gameOverMenu, youWin, youLose, playerScores;
 
-    void Awake()
-    {
-        GameManager.OnGameStateChanged += OnGameStateChanged;
-    }
-
-    void OnDestroy()
-    {
-        GameManager.OnGameStateChanged -= OnGameStateChanged;
-    }
+    void Awake() => GameManager.OnGameStateChanged += OnGameStateChanged;
+    void OnDestroy() => GameManager.OnGameStateChanged -= OnGameStateChanged;
 
     void OnGameStateChanged(GameManager.GameState state)
     {
@@ -25,10 +18,18 @@ public class GameMenu : MonoBehaviour
     IEnumerator DisplayGameOverMenu(float time)
     {
         yield return new WaitForSeconds(time);
+
         clearButton.SetActive(false);
         gameOverMenu.SetActive(true);
-        youWin.SetActive(!GameManager.Instance.user.HasLost());
-        youLose.SetActive(GameManager.Instance.user.HasLost());
+        DisplayMessage();
+    }
+
+    void DisplayMessage()
+    {
+        Player loser = GameManager.Instance.GetLoser();
+        youWin.SetActive(loser.GetType().Equals(typeof(AI)));
+        youLose.SetActive(loser.GetType().Equals(typeof(Player)));
+        //playerScores.SetActive(true);
     }
 
     public void Back()

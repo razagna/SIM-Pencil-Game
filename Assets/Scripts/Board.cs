@@ -9,11 +9,11 @@ public class Board : MonoBehaviour
     public List<Vertex> vertices = new List<Vertex>();
     public static List<LineSegment> lineSegments = new List<LineSegment>();
 
-    //void Awake()
-    //{
-    //    Init(10, 6);
-    //    Draw(0.004f, 0.5f);
-    //}
+    void Awake()
+    {
+        Init(10, 6);
+        Draw(0.004f, 0.5f);
+    }
 
     public void Init(float radius, int shape)
     {
