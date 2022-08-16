@@ -9,11 +9,11 @@ public class Board : MonoBehaviour
     public List<Vertex> vertices = new List<Vertex>();
     public static List<LineSegment> lineSegments = new List<LineSegment>();
 
-    void Awake()
-    {
-        Init(10, 6);
-        Draw(0.004f, 0.5f);
-    }
+    //void Awake()
+    //{
+    //    Init(10, 6);
+    //    Draw(0.004f, 0.5f);
+    //}
 
     public void Init(float radius, int shape)
     {
@@ -72,7 +72,7 @@ public class Board : MonoBehaviour
         foreach (LineSegment lineSegment in lineSegments)
             lineSegment.ResetValues();
 
-        GameManager.Instance.UpdateGameState(GameManager.GameState.Reset);
+        //GameManager.Instance.UpdateGameState(GameManager.GameState.Reset);
     }
 
     public void DestroyBoard()
@@ -87,6 +87,15 @@ public class Board : MonoBehaviour
         lineSegments.TrimExcess();
         vertices.Clear();
         vertices.TrimExcess();
+    }
+
+    public void FillBoard(List<int> indices, Color color)
+    {
+        foreach (int index in indices)
+        {
+            lineSegments[index].GetComponent<EdgeCollider2D>().enabled = false;
+            lineSegments[index].ChangeColor(color);
+        }
     }
 
 }

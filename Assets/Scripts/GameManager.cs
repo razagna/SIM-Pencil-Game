@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
         players = new Player[2] { user, enemy };
     }
 
-    Color GetPlayerColor(string player)
+    public static Color GetPlayerColor(string player)
     {
         var strings = PlayerPrefs.GetString(player).Split(", "[0]);
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class MainMenu : MonoBehaviour
 {
@@ -24,10 +25,10 @@ public class MainMenu : MonoBehaviour
         PlayerPrefs.SetInt("shape", shape);
 
         if (preview.transform.GetChild(0).childCount > 0) preview.DestroyBoard();
+
         preview.Init(1.3f, PlayerPrefs.GetInt("shape"));
         preview.Draw(0.004f, 0.15f, true);
-
-        GameManager.Instance.InitPlayers();
+        FillPreviewBoard();
     }
 
     public void SetPlayer(Image player)
@@ -38,11 +39,18 @@ public class MainMenu : MonoBehaviour
     public void SetPlayerColor(Image swatch)
     {
         player.color = swatch.color;
+
         string combinedColorString = swatch.color.r.ToString() + ", " + swatch.color.g.ToString() + ", " + swatch.color.b.ToString();
         PlayerPrefs.SetString(player.name, combinedColorString);
 
         preview.ResetBoard();
-        GameManager.Instance.InitPlayers();
+        FillPreviewBoard();
+    }
+
+    void FillPreviewBoard()
+    {
+        preview.FillBoard(new List<int>() { 1, 2, 9 }, GameManager.GetPlayerColor("Color_A"));
+        preview.FillBoard(new List<int>() { 3, 5, 7 }, GameManager.GetPlayerColor("Color_B"));
     }
 
 }
