@@ -8,6 +8,8 @@ public class LineSegment : MonoBehaviour
     LineRenderer lineRenderer;
     EdgeCollider2D edgeCollider;
     public bool selected = false;
+    Player owner;
+    Color color;
 
     void Awake() => GameManager.OnGameStateChanged += OnGameStateChanged;
     void OnGameStateChanged(GameManager.GameState state) => edgeCollider.enabled = !GameManager.Instance.GetActivePlayer().GetType().Equals(typeof(AI));
@@ -67,6 +69,7 @@ public class LineSegment : MonoBehaviour
 
     public void AssignTo(Player player)
     {
+        owner = player;
         selected = true;
         ChangeColor(player.color);
         player.AddLineSegment(this);
@@ -75,6 +78,7 @@ public class LineSegment : MonoBehaviour
 
     public void ChangeColor(Color color)
     {
+        this.color = color;
         lineRenderer.startColor = color;
         lineRenderer.endColor = color;
     }
@@ -115,6 +119,16 @@ public class LineSegment : MonoBehaviour
         lineRenderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
         ChangeColor(Color.gray);
         selected = false;
+    }
+
+    public Player GetOwner()
+    {
+        return owner;
+    }
+
+    public Color GetColor()
+    {
+        return color;
     }
 
 }

@@ -7,7 +7,7 @@ public class Board : MonoBehaviour
     float radius;
 
     public List<Vertex> vertices = new List<Vertex>();
-    public static List<LineSegment> lineSegments = new List<LineSegment>();
+    public List<LineSegment> lineSegments = new List<LineSegment>();
 
     //void Awake()
     //{
@@ -26,6 +26,10 @@ public class Board : MonoBehaviour
 
     void GenerateVerticies()
     {
+        GameObject container = Instantiate(new GameObject());
+        container.transform.SetParent(gameObject.transform);
+        container.name = "Vertices";
+
         float angle = 2 * Mathf.PI / shape;
 
         for (int currentVertex = 0; currentVertex < shape; currentVertex++)
@@ -36,19 +40,23 @@ public class Board : MonoBehaviour
             float yPos = radius * Mathf.Sin(currentAngle);
 
             Vertex vertex = new Vertex(xPos, yPos);
-            vertex.SetParent(gameObject.transform.GetChild(1));
+            vertex.SetParent(container.transform);
             vertices.Add(vertex);
         }
     }
 
     void GenerateLineSegments()
     {
+        GameObject container = Instantiate(new GameObject());
+        container.transform.SetParent(gameObject.transform);
+        container.name = "Lines";
+
         for (int startVertex = 0; startVertex < vertices.Count; startVertex++)
         {
             for (int otherVertex = startVertex + 1; otherVertex < vertices.Count; otherVertex++)
             {
                 GameObject newLineSegment = new GameObject();
-                newLineSegment.transform.parent = transform.GetChild(0);
+                newLineSegment.transform.SetParent(container.transform);
 
                 LineSegment lineSegment = newLineSegment.AddComponent<LineSegment>();
                 lineSegment.startPoint = vertices[startVertex].GetPosition();

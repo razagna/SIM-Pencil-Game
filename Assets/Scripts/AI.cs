@@ -6,7 +6,8 @@ public class AI : Player
 {
     public override async void SelectMove()
     {
-        List<LineSegment> lineSegments = Board.lineSegments;
+        Board board = GameObject.Find("Board").GetComponent<Board>();
+        List<LineSegment> lineSegments = board.lineSegments;
         for (int current = 0; current < lineSegments.Count; current++)
         {
             if (!lineSegments[current].selected)
