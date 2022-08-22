@@ -11,7 +11,7 @@ public class BoardTests : MonoBehaviour
     [SetUp]
     public void Setup()
     {
-        testObject = Instantiate(new GameObject());
+        testObject = new GameObject();
         board = testObject.AddComponent<Board>();
         board.Init(8, shape);
     }

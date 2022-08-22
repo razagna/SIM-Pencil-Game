@@ -14,14 +14,14 @@ public class LineTests : MonoBehaviour
     [SetUp]
     public void SetUp()
     {
-        testObject = Instantiate(new GameObject());
+        testObject = new GameObject();
 
         startPoint = new Vector3(0, 0, 0);
         endPoint = new Vector3(1, 0.5f, 0);
-        lineSegment = new LineSegment(startPoint, endPoint);
+        //lineSegment = new LineSegment(startPoint, endPoint);
 
-        //lineSegment = testObject.AddComponent<LineSegment>();
-        //lineSegment.Initialize(startPoint, endPoint);
+        lineSegment = testObject.AddComponent<LineSegment>();
+        lineSegment.Initialize(startPoint, endPoint);
     }
 
     [TearDown]
@@ -30,7 +30,7 @@ public class LineTests : MonoBehaviour
     [Test]
     public void ShouldDrawLineSegment()
     {
-        lineSegment.Draw(0.5f);
+        lineSegment.Draw(0.5f, false);
         LineRenderer lineRenderer = testObject.GetComponent<LineRenderer>();
         Assert.AreEqual(startPoint, lineRenderer.GetPosition(0));
         Assert.AreEqual(endPoint, lineRenderer.GetPosition(1));

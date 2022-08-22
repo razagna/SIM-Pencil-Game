@@ -26,8 +26,6 @@ public class GameManager : MonoBehaviour
 
     public static event Action<GameState> OnGameStateChanged;
 
-    Player user = new Player();
-    AI enemy = new AI();
     Player[] players;
 
     int activePlayer = 1;
@@ -45,8 +43,8 @@ public class GameManager : MonoBehaviour
 
     public void InitPlayers()
     {
-        user.color = GetPlayerColor("Color_A");
-        enemy.color = GetPlayerColor("Color_B");
+        Player user = new Player(GetPlayerColor("Color_A"));
+        AI enemy = new AI(GetPlayerColor("Color_B"));
         players = new Player[2] { user, enemy };
     }
 
@@ -94,6 +92,7 @@ public class GameManager : MonoBehaviour
     void HandlePlay()
     {
         players[activePlayer].SelectMove();
+        GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
     }
 
     void HandleSwitchPlayer()
@@ -115,7 +114,7 @@ public class GameManager : MonoBehaviour
 
     void HandleGameOver()
     {
-        string message = user.HasLost() ? "You Have Lost! :(" : "You Have Won! :)";
+        string message = players[0].HasLost() ? "You Have Lost! :(" : "You Have Won! :)";
         Debug.Log(message);
     }
 
@@ -135,5 +134,12 @@ public class GameManager : MonoBehaviour
     {
         return players[losingPlayer];
     }
+
+    //public IEnumerator WaitForClick(bool condition)
+    //{
+    //    yield return new WaitUntil(() => condition);
+    //    condition = false;
+    //    //yield return condition = false;
+    //}
 
 }

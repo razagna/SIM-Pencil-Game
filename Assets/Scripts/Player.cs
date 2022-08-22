@@ -7,6 +7,11 @@ public class Player
     public Color color;
     bool hasLost = false;
 
+    public Player(Color color)
+    {
+        this.color = color;
+    }
+
     public void AddLineSegment(LineSegment lineSegment)
     {
         ownedLines.Add(lineSegment);
@@ -58,6 +63,20 @@ public class Player
     public virtual void SelectMove()
     {
         Debug.Log("Pick your move!");
+        LineSegment.onHovered += HandleHover;
+        LineSegment.onClicked += HandleClick; 
+    }
+
+    void HandleHover(LineSegment lineSegment)
+    {
+        lineSegment.ChangeColor(new Color(color.r * 0.7f, color.g * 0.7f, color.b * 0.7f, 1));   
+    }
+
+    void HandleClick(LineSegment sender)
+    {
+        sender.AssignTo(this);
+        LineSegment.onClicked -= HandleClick;
+        GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
     }
 
 }

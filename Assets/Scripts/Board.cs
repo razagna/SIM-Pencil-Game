@@ -9,11 +9,11 @@ public class Board : MonoBehaviour
     public List<Vertex> vertices = new List<Vertex>();
     public List<LineSegment> lineSegments = new List<LineSegment>();
 
-    //void Awake()
-    //{
-    //    Init(10, 6);
-    //    Draw(0.004f, 0.5f);
-    //}
+    void Awake()
+    {
+        Init(10, 6);
+        Draw(0.05f, 0.5f);
+    }
 
     public void Init(float radius, int shape)
     {
@@ -26,7 +26,7 @@ public class Board : MonoBehaviour
 
     void GenerateVerticies()
     {
-        GameObject container = Instantiate(new GameObject());
+        GameObject container = new GameObject();
         container.transform.SetParent(gameObject.transform);
         container.name = "Vertices";
 
@@ -47,7 +47,7 @@ public class Board : MonoBehaviour
 
     void GenerateLineSegments()
     {
-        GameObject container = Instantiate(new GameObject());
+        GameObject container = new GameObject();
         container.transform.SetParent(gameObject.transform);
         container.name = "Lines";
 
@@ -59,8 +59,7 @@ public class Board : MonoBehaviour
                 newLineSegment.transform.SetParent(container.transform);
 
                 LineSegment lineSegment = newLineSegment.AddComponent<LineSegment>();
-                lineSegment.startPoint = vertices[startVertex].GetPosition();
-                lineSegment.endPoint = vertices[otherVertex].GetPosition();
+                lineSegment.Initialize(vertices[startVertex].GetPosition(), vertices[otherVertex].GetPosition());
                 lineSegments.Add(lineSegment);
             }
         }
@@ -77,10 +76,7 @@ public class Board : MonoBehaviour
 
     public void ResetBoard()
     {
-        foreach (LineSegment lineSegment in lineSegments)
-            lineSegment.ResetValues();
-
-        //GameManager.Instance.UpdateGameState(GameManager.GameState.Reset);
+        foreach (LineSegment lineSegment in lineSegments) lineSegment.ResetValues();
     }
 
     public void DestroyBoard()
@@ -101,7 +97,7 @@ public class Board : MonoBehaviour
     {
         foreach (int index in indices)
         {
-            lineSegments[index].GetComponent<EdgeCollider2D>().enabled = false;
+            //lineSegments[index].GetComponent<EdgeCollider2D>().enabled = false;
             lineSegments[index].ChangeColor(color);
         }
     }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AI : Player
 {
+    public AI(Color color) : base(color) => this.color = color;
     public override async void SelectMove()
     {
         Board board = GameObject.Find("Board").GetComponent<Board>();
@@ -19,7 +20,7 @@ public class AI : Player
             }
         }
 
-        GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
+        //GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
     }
 
 }

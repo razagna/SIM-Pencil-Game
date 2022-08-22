@@ -4,18 +4,32 @@ using UnityEngine;
 
 public class LineSegment : MonoBehaviour
 {
-    public Vector3 startPoint, endPoint;
+    Vector3 startPoint, endPoint;
     LineRenderer lineRenderer;
     EdgeCollider2D edgeCollider;
+
     public bool selected = false;
-    Player owner;
     Color color;
 
+    public delegate void MouseAction(LineSegment lineSegment);
+    public static event MouseAction onHovered;
+    public static event MouseAction onClicked;
+
+    void OnMouseOver() => onHovered(this);
+    void OnMouseDown() => onClicked(this);
+    void OnMouseExit() { if (!selected) ChangeColor(Color.gray); }
+
     void Awake() => GameManager.OnGameStateChanged += OnGameStateChanged;
-    void OnGameStateChanged(GameManager.GameState state) => edgeCollider.enabled = !GameManager.Instance.GetActivePlayer().GetType().Equals(typeof(AI));
+    void OnGameStateChanged(GameManager.GameState state) => edgeCollider.enabled = !selected && !GameManager.Instance.GetActivePlayer().GetType().Equals(typeof(AI));
     void OnDestroy() => GameManager.OnGameStateChanged -= OnGameStateChanged;
 
-    public void Draw(float lineWidth, bool preview)
+    public void Initialize(Vector3 startPoint, Vector3 endPoint)
+    {
+        this.startPoint = startPoint;
+        this.endPoint = endPoint;
+    }
+
+    public void Draw(float lineWidth, bool preview = false)
     {
         lineRenderer = gameObject.AddComponent<LineRenderer>();
         lineRenderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
@@ -29,7 +43,6 @@ public class LineSegment : MonoBehaviour
         lineRenderer.positionCount = 2;
         lineRenderer.useWorldSpace = false;
         lineRenderer.SetPositions(new Vector3[] { startPoint, endPoint });
-        
 
         lineRenderer.sortingOrder = 1;
 
@@ -46,30 +59,8 @@ public class LineSegment : MonoBehaviour
         }
     }
 
-    void OnMouseOver()
-    {
-        if (selected) return;
-        Color original = GameManager.Instance.GetActivePlayer().color;
-        Color hoverColor = new Color(original.r * 0.7f, original.g * 0.7f, original.b * 0.7f, 1);
-        ChangeColor(hoverColor);
-    }
-
-    void OnMouseDown()
-    {
-        if (selected) return;
-        AssignTo(GameManager.Instance.GetActivePlayer());
-        GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
-    }
-
-    void OnMouseExit()
-    {
-        if (selected) return;
-        ChangeColor(Color.gray);
-    }
-
     public void AssignTo(Player player)
     {
-        owner = player;
         selected = true;
         ChangeColor(player.color);
         player.AddLineSegment(this);
@@ -119,11 +110,6 @@ public class LineSegment : MonoBehaviour
         lineRenderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
         ChangeColor(Color.gray);
         selected = false;
-    }
-
-    public Player GetOwner()
-    {
-        return owner;
     }
 
     public Color GetColor()
