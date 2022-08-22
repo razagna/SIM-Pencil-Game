@@ -44,11 +44,9 @@ public class BoardTests : MonoBehaviour
     [Test]
     public void ShouldResetBoard()
     {
-        Color color = Color.green;
         ShouldFillBoard();
-        Assert.AreEqual(3, CountColor(color));
         board.ResetBoard();
-        Assert.AreEqual(0, CountColor(color));
+        Assert.AreEqual(0, CountColor(Color.green));
     }
 
     int CountColor(Color color)
