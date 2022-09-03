@@ -15,13 +15,13 @@ public class LineSegment : MonoBehaviour
     public static event MouseAction onHovered;
     public static event MouseAction onClicked;
 
+    void Awake() => GameManager.OnGameStateChanged += OnGameStateChanged;
+    void OnGameStateChanged(GameManager.GameState state) => edgeCollider.enabled = !(selected || GameManager.Instance.GetActivePlayer().GetType().Equals(typeof(AI)));
+    void OnDestroy() => GameManager.OnGameStateChanged -= OnGameStateChanged;
+
     void OnMouseOver() => onHovered(this);
     void OnMouseDown() => onClicked(this);
     void OnMouseExit() { if (!selected) ChangeColor(Color.gray); }
-
-    void Awake() => GameManager.OnGameStateChanged += OnGameStateChanged;
-    void OnGameStateChanged(GameManager.GameState state) => edgeCollider.enabled = !selected && !GameManager.Instance.GetActivePlayer().GetType().Equals(typeof(AI));
-    void OnDestroy() => GameManager.OnGameStateChanged -= OnGameStateChanged;
 
     public void Initialize(Vector3 startPoint, Vector3 endPoint)
     {
@@ -108,6 +108,7 @@ public class LineSegment : MonoBehaviour
     public void ResetValues()
     {
         lineRenderer.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
+        edgeCollider.enabled = true;
         ChangeColor(Color.gray);
         selected = false;
     }

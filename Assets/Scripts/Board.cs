@@ -77,6 +77,7 @@ public class Board : MonoBehaviour
     public void ResetBoard()
     {
         foreach (LineSegment lineSegment in lineSegments) lineSegment.ResetValues();
+        //GameManager.Instance.UpdateGameState(GameManager.GameState.Reset);
     }
 
     public void DestroyBoard()

@@ -1,19 +1,21 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class BoardTests : MonoBehaviour
 {
     GameObject testObject;
     Board board;
-    int shape = 6;
+    int shape;
 
     [SetUp]
     public void Setup()
     {
         testObject = new GameObject();
         board = testObject.AddComponent<Board>();
-        board.Init(8, shape);
+        board.Init(8, shape = 6);
     }
 
     [TearDown] public void TearDown() => Destroy(testObject);

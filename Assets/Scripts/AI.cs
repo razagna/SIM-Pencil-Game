@@ -20,7 +20,7 @@ public class AI : Player
             }
         }
 
-        //GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
+        GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
     }
 
 }

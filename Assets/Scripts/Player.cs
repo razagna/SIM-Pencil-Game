@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,18 +54,11 @@ public class Player
         return hasLost;
     }
 
-    public void ResetValues()
-    {
-        hasLost = false;
-        ownedLines.Clear();
-        ownedLines.TrimExcess();
-    }
-
     public virtual void SelectMove()
     {
         Debug.Log("Pick your move!");
         LineSegment.onHovered += HandleHover;
-        LineSegment.onClicked += HandleClick; 
+        LineSegment.onClicked += HandleClick;
     }
 
     void HandleHover(LineSegment lineSegment)
@@ -76,7 +70,16 @@ public class Player
     {
         sender.AssignTo(this);
         LineSegment.onClicked -= HandleClick;
+        //LineSegment.onHovered -= HandleHover;
         GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
     }
 
+    public void ResetValues()
+    {
+        hasLost = false;
+        ownedLines.Clear();
+        ownedLines.TrimExcess();
+        LineSegment.onHovered -= HandleHover;
+        LineSegment.onClicked -= HandleClick;
+    }
 }

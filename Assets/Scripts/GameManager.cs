@@ -92,7 +92,6 @@ public class GameManager : MonoBehaviour
     void HandlePlay()
     {
         players[activePlayer].SelectMove();
-        GameManager.Instance.UpdateGameState(GameManager.GameState.EvaluateBoard);
     }
 
     void HandleSwitchPlayer()
@@ -118,10 +117,11 @@ public class GameManager : MonoBehaviour
         Debug.Log(message);
     }
 
-    void HandleReset()
+    public void HandleReset()
     {
         Debug.Log("Game is being reset");
         foreach (Player player in players) player.ResetValues();
+        activePlayer = 1;
         UpdateGameState(GameState.SwitchPlayer);
     }
 
@@ -134,12 +134,5 @@ public class GameManager : MonoBehaviour
     {
         return players[losingPlayer];
     }
-
-    //public IEnumerator WaitForClick(bool condition)
-    //{
-    //    yield return new WaitUntil(() => condition);
-    //    condition = false;
-    //    //yield return condition = false;
-    //}
 
 }
