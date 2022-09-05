@@ -12,7 +12,7 @@ public class Board : MonoBehaviour
     void Awake()
     {
         Init(10, 6);
-        Draw(0.05f, 0.5f);
+        Draw(0.1f, 2);
     }
 
     public void Init(float radius, int shape)
@@ -43,12 +43,17 @@ public class Board : MonoBehaviour
             vertex.SetParent(container.transform);
             vertices.Add(vertex);
         }
+
+        container.transform.localPosition = Vector3.zero;
+        container.transform.localScale = new Vector3(40, 40, 0);
+
     }
 
     void GenerateLineSegments()
     {
         GameObject container = new GameObject();
         container.transform.SetParent(gameObject.transform);
+        container.transform.localPosition = Vector3.zero;
         container.name = "Lines";
 
         for (int startVertex = 0; startVertex < vertices.Count; startVertex++)
@@ -63,6 +68,10 @@ public class Board : MonoBehaviour
                 lineSegments.Add(lineSegment);
             }
         }
+
+        
+        container.transform.localScale = new Vector3(40, 40, 0);
+        
     }
 
     public void Draw(float vertexScale, float lineWidth, bool preview = false)
